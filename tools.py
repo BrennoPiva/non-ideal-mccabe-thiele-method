@@ -23,17 +23,12 @@ def Coef_atv(modelo, ctes_thermo, T_K):
             b21 = ctes_thermo[modelo].get('b21', 0.0)
             c12 = ctes_thermo[modelo].get('c12', 0.30)
             c21 = ctes_thermo[modelo].get('c21', 0.30)
-            d12 = ctes_thermo[modelo].get('d12', 0.0)
-            d21 = ctes_thermo[modelo].get('d21', 0.0)
 
             tau12 = a12 + (b12 / T_K)
             tau21 = a21 + (b21 / T_K)
 
-            alpha12 = c12 + d12 * (T_K - 273.15)
-            alpha21 = c21 + d21 * (T_K - 273.15)
-
-            G12 = np.exp(-alpha12 * tau12)
-            G21 = np.exp(-alpha21 * tau21)
+            G12 = np.exp(-c12 * tau12)
+            G21 = np.exp(-c21 * tau21)
 
             term1_gamma1 = tau21 * ((G21 / (x1 + G21 * x2)) ** 2)
             term2_gamma1 = (tau12 * G12) / ((G12 * x1 + x2) ** 2)
@@ -46,20 +41,15 @@ def Coef_atv(modelo, ctes_thermo, T_K):
             return np.exp(ln_gamma1), np.exp(ln_gamma2)
 
         case 'Wilson':
-            a12 = ctes_thermo[modelo]['a12']
-            a21 = ctes_thermo[modelo]['a21']
-            b12 = ctes_thermo[modelo]['b12']
-            b21 = ctes_thermo[modelo]['b21']
-            
+            a12 = ctes_thermo[modelo].get('a12', 0.0)
+            a21 = ctes_thermo[modelo].get('a21', 0.0)
+            b12 = ctes_thermo[modelo].get('b12', 0.0)
+            b21 = ctes_thermo[modelo].get('b21', 0.0)
             c12 = ctes_thermo[modelo].get('c12', 0.0)
             c21 = ctes_thermo[modelo].get('c21', 0.0)
-            d12 = ctes_thermo[modelo].get('d12', 0.0)
-            d21 = ctes_thermo[modelo].get('d21', 0.0)
-            e12 = ctes_thermo[modelo].get('e12', 0.0)
-            e21 = ctes_thermo[modelo].get('e21', 0.0)
 
-            ln_A12 = a12 + (b12 / T_K) + (c12 * np.log(T_K)) + (d12 * T_K) + (e12 / (T_K**2))
-            ln_A21 = a21 + (b21 / T_K) + (c21 * np.log(T_K)) + (d21 * T_K) + (e21 / (T_K**2))
+            ln_A12 = a12 + (b12 / T_K) + (c12 * np.log(T_K))
+            ln_A21 = a21 + (b21 / T_K) + (c21 * np.log(T_K))
 
             L12 = np.exp(ln_A12)
             L21 = np.exp(ln_A21)
@@ -74,6 +64,7 @@ def Coef_atv(modelo, ctes_thermo, T_K):
         
         case _:
             raise ValueError(f"Modelo {modelo} não suportado.")
+
 
 #-------------------------------------------- CALCULO DE TEMPERATURA DE SATURACAO --------------------------------------#
 def temperatura_sat_componente(P_total_Pa, comp_dict):
